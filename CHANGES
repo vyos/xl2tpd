@@ -1,3 +1,195 @@
+v1.3.16 (October 23, 2020)
+* Re-add braces for if-else that have only statement [Samir Hussain]
+* xl2tpd-control refactoring [Alexander Naumov]
+* fix travis 'script' syntax [Alexander Naumov]
+* adding xl2tpd-control tests to travis [Alexander Naumov]
+* Re-adding text giving more inofrmation about using ipsec with xl2tpd [Samir Hussain]
+* Update README: typo, links to RFC, link to travis [Alexander Naumov]
+* Travis will test different compiler on linux distro [Samir Hussain]
+* Update travis for proper matrix [Samir Hussain]
+* Add Focal to travis testing [Samir Hussain]
+* yet another man-page update [Alexander Naumov]
+* update man-pages, fix typo [Alexander Naumov]
+* set_flow: result of operation is garbage or undefined [Alexander Naumov]
+* Update README [Alexander Naumov]
+* adding xl2tpd.init.patch [Alexander Naumov]
+* adding Makefile.patch [Alexander Naumov]
+* moving changes to separate file [Alexander Naumov]
+* sync/update spec file with official SUSE version [Alexander Naumov]
+* Set IP_PKTINFO even if setting of IPPROTO_IP fails (as it was in 1.3.9) [shadyhh]
+* Update .gitignore vim swap file [Samir Hussain]
+* Travis will test supported Ubuntu LTS distros [Samir Hussain]
+* Updating COMPATABILITY_ISSUES with info on Miktrotik servers [Samir Hussain]
+* Add work around for Android 10 maxium retries in COMPATIBILITY_ISSUES [Samir Hussain]
+* Add compatability issues with Ciso ASA [Samir Hussain]
+
+v1.3.15 (October 13, 2019)
+* Fix spacing of CONTRIBUTION.md [Samir Hussain]
+* Add CONTRIBUTION.md [Samir Hussain]
+* Specify missing log arguments [Patch by github user: 川島和津実]
+* Use matrix for .travis.yaml to test for multiple Linux distro [Samir Hussain]
+* Fixing .travis.yaml spacing warning [Samir Hussain]
+* Sockopt bug fix for multiple IP's [JDTX]
+* Add Clang as compiler test for travis [Samir Hussain]
+* Add info on building and installing xl2tpd [Samir Hussain]
+
+v1.3.14 (April 17, 2019)
+* osport.h: replace SUSv3-specific functions by POSIX variants [Fabrice Fontaine]
+* avp: Error Code field in Result Code AVP is optional [Pau Espin Pedrol]
+* network_thread: Early continue in loop to remove huge indented block [Pau Espin Pedrol]
+*  network_thread: Simplify while loop using for loop [Pau Espin Pedrol]
+* network: connect_pppol2tp: early return to avoid huge indentation block [Pau Espin Pedrol]
+* xl2tpd: start_pppd: Fix truncation of last character [Pau Espin Pedrol]
+* handle_packet: Remove unneded else clause when handling payload [Pau Espin Pedrol]
+* control: Split control message handling into its own function [Pau Espin Pedrol]
+* handle_packet: Rearrange code flow to simplify it [Pau Espin Pedrol]
+* avp: Early failure if no handler to remove indent block [Pau Espin Pedrol]
+* xl2tpd: Mark internal symbols as static [Pau Espin Pedrol]
+* Fix indentation and whitespace in code block [Pau Espin Pedrol]
+* xl2tpd: Remove unused variable [Pau Espin Pedrol]
+* network: Add missing close(kernel_fd) on init network failure [Pau Espin Pedrol]
+* network: Add missing close(server_fd) on init network failure [Pau Espin Pedrol]
+* Add 'cap backoff' option, limiting exponential backoff retries will
+  be delayed by exponentially longer time, unless that time is capped
+  by configuration. [Bart Trojanowski]
+* Add program to show status icon in system tray. [Github user: username34]
+* Add info on building and installing xl2tpd [Samir Hussain]
+* Update formatting of README.md [Samir Hussain]
+* Rename README.xl2tpd to README.md [Samir Hussain]
+* Update Debian changelog [Samir Hussain]
+
+v1.3.13 (December 3, 2018)
+* Specify email address for reporting security vulnerabilities [Samir Hussain]
+* Fix compile warning with USE_KERNEL in xl2tpd.c [Samir Hussain]
+* Applying patch that reduces compile warnings and fixes warnings from gcc and clang. [Gareth Ansell]
+* Fix compiler warnings in network.c [Gareth Ansell]
+* Add a make command for packaging's prep work [Samir Hussain]
+* Add Makefile directive for getting version [Samir Hussain]
+* Add a preproc for Watchguard firewall (Github issue #136) [daniel1111]
+* Convert from ISO-8859 to UTF-8 [Simon Deziel]
+* Update README to provide latest info on xl2tpd + Linux kernel 4.15+ [Samir Hussain]
+* Use dh_auto_build in order to allow cross compiles [Helmut Grohne]
+
+v1.3.12 (May 18, 2018)
+* TOS value to copy to the tunnel header (Yurkovskyy)
+* Fix for ENODEV (No such device) error with Linux kernel 4.15 (Douglas Kosovic)
+* Update xl2tpd.init (bogdik)
+* fix version number and upload (Samuel Thibault)
+* import wheezy changes  (Samuel Thibault)
+
+v1.3.11 (March 7, 2018)
+* Build packages for Xenial by default (Simon Deziel)
+* Bump d/compat to 9 (Simon Deziel)
+* Drop d/repack.sh script and refresh d/watch (Simon Deziel)
+* Refresh d/control by partly sync'ing from Debian (Simon Deziel)
+* Use HTTPS URL in d/copyright (Simon Deziel)
+
+v1.3.10.1 (November 16, 2017)
+* Have max retries as a configuration [Samir Hussain]
+* Add more into to "select timeout" debug message [Samir Hussain]
+
+v1.3.10 (August 2, 2017)
+* Update STRLEN in file.h to 100 (from 80) [Samir Hussain]
+* xl2tpd-control: fix xl2tpd hanged up in "fopen" [wendy2001011]
+* Update version in spec and opewnrt Makefile. [Samir Hussain]
+
+v1.3.9 (February 8, 2017)
+* Add xl2tpd-control man pages (Samir Hussain)
+* Update spec file with newest Soure0 and version (Samir Hussain)
+* Update License file (Samir Hussain)
+* Display PID for call in the logs (Samir Hussain)
+* Use left shift rather than pow() function. (Samir Hussain)
+* Enable Travis integration (Samir Hussain)
+* Remove unnecessary casting of malloc() results (Andrew Clayton)
+* Remove an unused line of code in init_config() (Andrew Clayton)
+* Fix some undefined behaviour in read_result() (Andrew Clayton)
+* Fix feature test macro deprecation warnings (Andrew Clayton)
+
+v1.3.8 (August 11, 2016)
+* Another one fix for control buf handling in udp_xmit (Sergey Ryazanov)
+* Fixing minor bug in Linux that was introduced by 90368 (Samir Hussain)
+* Fix control buffer handling in udp_xmit (rsa9000)
+* Avoid using IP_PKTINFO with non-Linux systems (Sergey Ryazanov)
+* Remove duplicated UDP checksum disabling (Sergey Ryazanov)
+* Handle LDLIBS carefully (Sergey Ryazanov)
+* Avoid false-positive warning message from not smart compilers (Sergey Ryazanov)
+* Correctly activate XPG4v2 support (Sergey Ryazanov)
+* Simplify signal header inclusion (Sergey Ryazanov)
+* Adding info on the mailing lists (Samir Hussain)
+* Fixing minor spelling typo in code. (Samir Hussain)
+* Fixing minor spelling mistakes in xl2tpd.conf.5 and l2tpd.conf.sample (Samir Hussain)
+* Removing -fno-builtin from CFLAGS (Samir Hussain)
+
+v1.3.7 (March 29, 2016)
+* Adding defensive code to deal with error when pppd exits (Samir Hussain)
+* Minor compilation fixes (Yousong Zhou)
+* Refresh debian/ from Debian. Thanks! (Simon Deziel)
+* Update URL (Simon Deziel)
+* Update copyright year (Simon Deziel)
+* Add local ip range option. (Patch by by Peter W Morreale)
+* Drop RFC 2661 copy. (Simon Deziel)
+* debian/control drop legacy Replaces (Simon Deziel)
+* Typo fix (Simon Deziel)
+* Fix #98 by checking if a valid PID is being killed (Pieter Jordaan)
+* Avoid problems with bad avp lengths and remaining hidlen from previous
+  iteration (Cristi Cimpianu)
+* Fix minor grammar issues in xl2tpd.conf(5) (kballou)
+* Fix possible NULL reference when removing lac (Yousong Zhou)
+* Describe autodial option in xl2tpd.conf manpage (Anton Leontiev)
+* Update URL in BUGS file (Anton Leontiev)
+* Add size optimization (Cristi Cimpianu)
+* Remove useless returns from magic_lac_tunnel (Cristi Cimpianu)
+* Remove duplicate xmit for ZLBs (Cristi Cimpianu)
+* Fix segfault on lac remove (Cristi Cimpianu)
+* Fix paths in man pages (Taiki Sugawara)
+* Stop sending ZLB in response to out of order ZLB from check_control (Cristi Cimpianu)
+* Add exponential backoff retransmits (Pieter Willem Jordaan)
+* Fix build errors caused by inline function with gcc 5 (Kai Kang)
+* Fix memory leaks and accessing free'd memory (Yousong Zhou)
+* Fix double-free on dial_no_tmp; (Yousong Zhou)
+* Change handle_special to return a value indicating if it frees the buffer (Cristi Cimpianu)
+* Remove unnecessary NULL check on lac. (Yousong Zhou)
+* xl2tpd-control: show all available commands in --help. (Yousong Zhou)
+* Ignore SIGPIPE signal. (Yousong Zhou)
+* Unlink result file to prevent leftover a regular file. (Yousong Zhou)
+* Introduce new option -l for using syslog as the logging facility. (Yousong Zhou)
+* start_pppd: place opts after "plugin pppol2tp.so". (Yousong Zhou)
+* Fix typo in reporting available lns count. (Yousong Zhou)
+* xl2tpd-control: enhance output of print_error(). (Yousong Zhou)
+* xl2tpd-control: cleaup result file atexit(). (Yousong Zhou)
+* xl2tpd-control: open control file with O_NONBLOCK. (Yousong Zhou)
+* xl2tpd-control: define _GNU_SOURCE to use fmemopen() and friends. (Yousong Zhou)
+* xl2tpd-control: check end-of-file when reading pipe to avoid dead loop. (Yousong Zhou)
+* Correct CDN message result range (Constantin Calotescu)
+* place the PPP frame buffer to the call structure (rsa9000)
+* Place the pty read buffer to the call structure (rsa9000)
+* Pass pointer to call structure to read_packet() (rsa9000)
+* Remove convert arg of read_packet() function (rsa9000)
+* Remove dead code (rsa9000)
+* Fix the list of ignored files (rsa9000)
+* Add checks before closing sockets (Cristi Cimpianu)
+* Add a bit more info about existing tunnels and calls (Cristi Cimpianu)
+* Fix endless loop (Cristi Cimpianu)
+* Add fix for socket leak to fork children (Cristi Cimpianu)
+* Random fixes (Constantin Calotescu)
+* Solve some memory leaks that show up after several days of running with
+  flapping tunnels and calls. (Cristi Cimpianu)
+* Fix for avoiding xltpd occasionally going into an endless loop. (Damian Ivereigh)
+* Fixed issue with strtok modifying contents when pushing details for ppd plugins (Michael Lawson)
+* Added the ability to add a pppd plugin and params to an lns (Michael Lawson)
+* Modified lns_remove to close each call rather than just calling destroy_tunnel() (Michael Lawson)
+* Added control method to remove an lns (Michael Lawson)
+* Refactored the do_control() method to use a handler approach for processing (Michael Lawson)
+* Fixed potential null pointer when creating a new lns (Michael Lawson)
+* Added status control command for lns, this returns tunnel and call information via the control socket (Michael Lawson)
+* Added control support for adding lns and status command in xl2tp-control (Michael Lawson)
+* Added control pipe method CONTROL_PIPE_REQ_LNS_ADD_MODIFY to modify LNS configuration (Michael Lawson)
+* Introduced shared control request types (Michael Lawson)
+* Fixed typo in xl2tpd.conf.5 (paina)
+* Some malloc/free sanity patches. (Patrick Naubert)
+* Better NETBSD support. (Patrick Naubert)
+* Prevent a DEBUG message from being sent to syslog when not debugging. (Patrick Naubert)
+
 v1.3.6 (Jan 15, 2014)
 * I keep screwing up the version number.  Changes to CHANGES and l2tp.h
 * Fix the size of the lenght param for AVP headers. This should fix Android
@@ -92,7 +284,7 @@ v1.2.7
 v1.2.6
 * Partial fix for compiling on OpenBSD [synapse]
 * add missing setting of logopen=1 in init_log() [Shingo Yamawaki]
-* xltpd could deadlock on syslog() call in signal handler [Bart Trojanowski] 
+* xltpd could deadlock on syslog() call in signal handler [Bart Trojanowski]
 * fix fedora/centos spec file [Paul]
 
 v1.2.5
@@ -108,14 +300,14 @@ v1.2.4
 * Workaround for broken kernels that send duplicate pids to waitpid()
   See: https://bugzilla.redhat.com/show_bug.cgi?id=486945 [Mika / Tuomo]
 * Fix pppd option from legacy -detach to nodetach [Tuomo]
-  
+
 v1.2.3
 * Fixes for prefix/destdir and spec files [paul/tuomo]
 * Use pcap not pcap-devel on suse, rhel and centos [paul/tuomo/shingo]
 * Added pfc to contrib. pfc is a tool to compile active-filters
   for pppd, which can be used for dial-on-demand filters [paul/roberto]
 * Bug tracker bugs fixed
-  # 998: xl2tpd-1.2.2 Makefile sets wrong path for mandir 
+  # 998: xl2tpd-1.2.2 Makefile sets wrong path for mandir
 
 v1.2.2
 * PPP CHAP authentication using plugin passwordfd.so failed [tgohad@mvista.com]
@@ -138,7 +330,7 @@ v1.2.0
 
 v1.1.12
 * Fix for dropped packets and wrong disconnects. [Ray Overland / Tuomo]
-* Included debian directory from Roberto C. Sanchez <roberto@connexer.com> 
+* Included debian directory from Roberto C. Sanchez <roberto@connexer.com>
 
 v1.1.11
 * Support for passwordfd when using xl2tpd as client.
@@ -216,7 +408,7 @@ v1.01
 v1.00
 * First version managed by Xelerance, called xl2tpd.
 * If we aren't deamonized, then log to stderr.
-* added install: and DESTDIR support 
+* added install: and DESTDIR support
 
 0.70
 --

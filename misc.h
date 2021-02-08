@@ -24,8 +24,8 @@ struct buffer
     void *rstart;
     void *rend;
     void *start;
-    int len;
-    int maxlen;
+    size_t len;
+    size_t maxlen;
 #if 0
     unsigned int addr;
     int port;
@@ -65,10 +65,9 @@ extern void l2tp_log (int level, const char *fmt, ...);
 extern struct buffer *new_buf (int);
 extern void udppush_handler (int);
 extern int addfcs (struct buffer *buf);
-extern inline void swaps (void *, int);
+extern void swaps (void *, int);
 extern void do_packet_dump (struct buffer *);
 extern void status (const char *fmt, ...);
-extern void status_handler (int signal);
 extern int getPtyMaster(char *, int);
 extern void do_control (void);
 extern void recycle_buf (struct buffer *);

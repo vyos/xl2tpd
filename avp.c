@@ -104,6 +104,7 @@ char *cdn_result_codes[] = {
     "Call failed due to lack of appropriate facilities being available (permanent condition)",
     "Invalid destination",
     "Call failed due to no carrier detected",
+    "Call failed due to detection of a busy signal",
     "Call failed due to lack of a dial tone",
     "Call was no established within time allotted by LAC",
     "Call was connected but no appropriate framing was detect"
@@ -129,7 +130,7 @@ struct unaligned_u16 {
 } __attribute__((packed));
 
 /*
- * t, c, data, and datalen may be assumed to be defined for all avp's
+ * t, c, data, and datalen may be assumed to be defined for all AVP's
  */
 
 int message_type_avp (struct tunnel *t, struct call *c, void *data,
@@ -166,7 +167,7 @@ int message_type_avp (struct tunnel *t, struct call *c, void *data,
     if (t->sanity)
     {
         /*
-         * Look ou our state for each message and make sure everything
+         * Look out our state for each message and make sure everything
          * make sense...
          */
         if ((c != t->self) && (c->msgtype < Hello))
@@ -380,13 +381,15 @@ int ignore_avp (struct tunnel *t, struct call *c, void *data, int datalen)
      * The spec says we have to accept authentication information
      * even if we just ignore it, so that's exactly what
      * we're going to do at this point.  Proxy authentication is such
-     * a rediculous security threat anyway except from local
-     * controled machines.
+     * a ridiculous security threat anyway except from local
+     * controlled machines.
      *
      * FIXME: I need to handle proxy authentication as an option.
      * One option is to simply change the options we pass to pppd.
      *
      */
+    UNUSED(data);
+    UNUSED(datalen);
     if (gconfig.debug_avp)
     {
         if (DEBUG)
@@ -397,6 +400,7 @@ int ignore_avp (struct tunnel *t, struct call *c, void *data, int datalen)
 
 int seq_reqd_avp (struct tunnel *t, struct call *c, void *data, int datalen)
 {
+    UNUSED(data);
 #ifdef SANITY
     if (t->sanity)
     {
@@ -435,23 +439,23 @@ int result_code_avp (struct tunnel *t, struct call *c, void *data,
                      int datalen)
 {
     /*
-     * Find out what version of l2tp the other side is using.
+     * Find out what version of L2TP the other side is using.
      * I'm not sure what we're supposed to do with this but whatever..
      */
 
-    int error;
+    int error = -1; /* error code unset */
     int result;
     struct unaligned_u16 *raw = data;
 #ifdef SANITY
     if (t->sanity)
     {
-        if (datalen < 10)
+        if (datalen < 8)
         {
             if (DEBUG)
                 l2tp_log (LOG_DEBUG,
-                     "%s: avp is incorrect size.  %d < 10\n", __FUNCTION__,
+                     "%s: avp is incorrect size.  %d < 8\n", __FUNCTION__,
                      datalen);
-            wrong_length (c, "Result Code", 10, datalen, 1);
+            wrong_length (c, "Result Code", 8, datalen, 1);
             return -EINVAL;
         }
         switch (c->msgtype)
@@ -469,7 +473,6 @@ int result_code_avp (struct tunnel *t, struct call *c, void *data,
     }
 #endif
     result = ntohs (raw[3].s);
-    error = ntohs (raw[4].s);
 
    /*
     * from prepare_StopCCN and prepare_CDN, note missing htons() call
@@ -482,15 +485,6 @@ int result_code_avp (struct tunnel *t, struct call *c, void *data,
                  "%s: result code endianness fix for buggy Apple client. network=%d, le=%d\n",
                  __FUNCTION__, result, result >> 8);
         result >>= 8;
-    }
-
-    if (((error & 0xFF) == 0) && (error >> 8 != 0))
-    {
-        if (DEBUG)
-            l2tp_log (LOG_DEBUG,
-                 "%s: error code endianness fix for buggy Apple client. network=%d, le=%d\n",
-                 __FUNCTION__, error, error >> 8);
-        error >>= 8;
     }
 
     if ((c->msgtype == StopCCN) && ((result > 7) || (result < 1)))
@@ -511,9 +505,24 @@ int result_code_avp (struct tunnel *t, struct call *c, void *data,
         return 0;
     }
 
+    if (datalen >= 10) {
+        error = ntohs (raw[4].s);
+        if (((error & 0xFF) == 0) && (error >> 8 != 0))
+        {
+            if (DEBUG)
+                l2tp_log (LOG_DEBUG,
+                     "%s: error code endianness fix for buggy Apple client. network=%d, le=%d\n",
+                     __FUNCTION__, error, error >> 8);
+            error >>= 8;
+        }
+    }
+
     c->error = error;
     c->result = result;
-    safe_copy (c->errormsg, (char *) &raw[5].s, datalen - 10);
+    if (datalen > 10)
+        safe_copy (c->errormsg, (char *) &raw[5].s, datalen - 10);
+    else
+        c->errormsg[0] = 0;
     if (gconfig.debug_avp)
     {
         if (DEBUG && (c->msgtype == StopCCN))
@@ -538,7 +547,7 @@ int protocol_version_avp (struct tunnel *t, struct call *c, void *data,
                           int datalen)
 {
     /*
-     * Find out what version of l2tp the other side is using.
+     * Find out what version of L2TP the other side is using.
      * I'm not sure what we're supposed to do with this but whatever..
      */
 
@@ -1477,7 +1486,7 @@ int rx_speed_avp (struct tunnel *t, struct call *c, void *data, int datalen)
 int tx_speed_avp (struct tunnel *t, struct call *c, void *data, int datalen)
 {
     /*
-     * What is the tranmsit baud rate of the call?
+     * What is the transmit baud rate of the call?
      */
     struct unaligned_u16 *raw = data;
 
@@ -1627,17 +1636,22 @@ int handle_avps (struct buffer *buf, struct tunnel *t, struct call *c)
      * checking is done at this point.
      */
 
+    /* TODO: Refactor function to not use "goto next" */
+
     struct avp_hdr *avp;
     int len = buf->len - sizeof (struct control_hdr);
     int firstavp = -1;
     int hidlen = 0;
     char *data = buf->start + sizeof (struct control_hdr);
     avp = (struct avp_hdr *) data;
+    /* I had to comment out the following since Valgrind tells me it leaks like my bathroom faucet
     if (gconfig.debug_avp)
         l2tp_log (LOG_DEBUG, "%s: handling avp's for tunnel %d, call %d\n",
              __FUNCTION__, t->ourtid, c->ourcid);
+    */
     while (len > 0)
     {
+        hidlen = 0;
         /* Go ahead and byte-swap the header */
         swaps (avp, sizeof (struct avp_hdr));
         if (avp->attr > AVP_MAX)
@@ -1658,7 +1672,7 @@ int handle_avps (struct buffer *buf, struct tunnel *t, struct call *c)
             {
                 if (DEBUG)
                     l2tp_log (LOG_WARNING,
-                         "%s:  don't know how to handle atribute %d.\n",
+                         "%s:  don't know how to handle attribute %d.\n",
                          __FUNCTION__, avp->attr);
                 goto next;
             }
@@ -1706,7 +1720,7 @@ int handle_avps (struct buffer *buf, struct tunnel *t, struct call *c)
             l2tp_log (LOG_DEBUG, "%s: Hidden bit set on AVP.\n", __FUNCTION__);
 #endif
             /* We want to rewrite the AVP as an unhidden AVP
-               and then pass it along as normal.  Remeber how
+               and then pass it along as normal.  Remember how
                long the AVP was in the first place though! */
             hidlen = avp->length;
             if (decrypt_avp (data, t))
@@ -1731,30 +1745,8 @@ int handle_avps (struct buffer *buf, struct tunnel *t, struct call *c)
         }
         else
             hidlen = 0;
-        if (avps[avp->attr].handler)
-        {
-            if (avps[avp->attr].handler (t, c, avp, ALENGTH (avp->length)))
-            {
-                if (AMBIT (avp->length))
-                {
-                    l2tp_log (LOG_WARNING,
-                         "%s: Bad exit status handling attribute %d (%s) on mandatory packet.\n",
-                         __FUNCTION__, avp->attr,
-                         avps[avp->attr].description);
-                    c->needclose = -1;
-                    return -EINVAL;
-                }
-                else
-                {
-                    if (DEBUG)
-                        l2tp_log (LOG_DEBUG,
-                             "%s: Bad exit status handling attribute %d (%s).\n",
-                             __FUNCTION__, avp->attr,
-                             avps[avp->attr].description);
-                }
-            }
-        }
-        else
+
+        if (!avps[avp->attr].handler)
         {
             if (AMBIT (avp->length))
             {
@@ -1769,22 +1761,50 @@ int handle_avps (struct buffer *buf, struct tunnel *t, struct call *c)
             else
             {
                 if (DEBUG)
-                    l2tp_log (LOG_WARNING, "%s:  no handler for atribute %d (%s).\n",
+                    l2tp_log (LOG_WARNING, "%s:  no handler for attribute %d (%s).\n",
+                         __FUNCTION__, avp->attr,
+                         avps[avp->attr].description);
+                goto next;
+            }
+        }
+
+        if (avps[avp->attr].handler (t, c, avp, ALENGTH (avp->length)))
+        {
+            if (AMBIT (avp->length))
+            {
+                l2tp_log (LOG_WARNING,
+                     "%s: Bad exit status handling attribute %d (%s) on mandatory packet.\n",
+                     __FUNCTION__, avp->attr,
+                     avps[avp->attr].description);
+                c->needclose = -1;
+                return -EINVAL;
+            }
+            else
+            {
+                if (DEBUG)
+                    l2tp_log (LOG_DEBUG,
+                         "%s: Bad exit status handling attribute %d (%s).\n",
                          __FUNCTION__, avp->attr,
                          avps[avp->attr].description);
             }
         }
+
       next:
-        if (hidlen)
+        if (hidlen && ALENGTH(hidlen))
         {
             /* Skip over the complete length of the hidden AVP */
             len -= ALENGTH (hidlen);
             data += ALENGTH (hidlen);
         }
-        else
+        else if (ALENGTH(avp->length))
         {
             len -= ALENGTH (avp->length);
             data += ALENGTH (avp->length);      /* Next AVP, please */
+        }
+        else
+        {
+            l2tp_log (LOG_WARNING, "%s: broken avp->length zero %d\n", __FUNCTION__,avp->length);
+            break;
         }
         avp = (struct avp_hdr *) data;
         firstavp = 0;

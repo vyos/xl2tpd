@@ -1,4 +1,8 @@
 *.o
 *~
 *.bak
-l2tpd
+*.sw?
+tags
+xl2tpd
+xl2tpd-control
+pfc

@@ -1,14 +1,14 @@
-.TH xl2tpd 8 "Sep 2020"
+.TH xl2tpd-control 8  "Sep 2020"
 
 .SH NAME
-xl2tpd \- Layer 2 Tunnelling Protocol Daemon.
+xl2tpd\-control \- xl2tpd control utility.
 
 .SH DESCRIPTION
 xl2tpd is an implementation of the Layer 2 Tunneling Protocol (RFC 2661).
 L2TP allows to tunnel PPP over UDP. Some ISPs use L2TP to tunnel user sessions
 from dial-in servers (modem banks, ADSL DSLAMs) to back-end PPP servers.
-Another important application is Virtual Private Networks (VPN) where the
-IPsec protocol is used to secure the L2TP connection (L2TP/IPsec, RFC 3193).
+Another important application is Virtual Private Networks where the IPsec
+protocol is used to secure the L2TP connection (L2TP/IPsec, RFC 3193).
 
 xl2tpd works by opening a pseudo-tty for communicating with pppd.
 It runs completely in userspace but supports kernel mode L2TP.
@@ -18,48 +18,56 @@ NAT'ed IP's by different clients (eg all clients connecting from their
 linksys internal IP 192.168.1.101) as well as multiple clients behind
 the same NAT router.
 
-This implementation is based on L2TPd 0.61 from http://www.marko.net/l2tp
-and patches collected by Jacco de Leeuw at
-http://www.jacco2.dds.nl/networking/openswan-l2tp.html.
+.SH SYNOPSIS
+.HP
+\fBxl2tpd-control\fR [\fI-c\fR PATH] \fI<COMMAND>\fR \fI<TUNNEL_NAME>\fR [\fIOPTIONS\fR]
+
 
 .SH OPTIONS
-.TP 
-.B -D
-This option prevents xl2tpd from detaching from the terminal and daemonizing.
-
-.TP 
-.B -l
-This option tells xl2tpd to use syslog for logging even when \fB\-D\fR
-was specified.
+.TP
+.B -c
+This option specifies xl2tpd control file.
 
 .TP
-.B -c <config_file>
-Set an alternate config file.
-Fallback configuration file is /etc/l2tpd/l2tpd.conf.
+.B -d
+This option enables debugging mode.
 
-.TP 
-.B -s <secret_file>
-Tells xl2tpd to use an alternate "secrets" file.
+.SH COMMANDS
+.TP
+.B add-lac
+Adds new or modify existing LAC (L2TP Access Concentrator) configuration.
+Configuration should be specified as a command options in <key>=<value>
+pairs format. See available options in xl2tpd.conf(5).
 
-.TP 
-.B -p <pid_file>
-Set an alternate pid file.
-Default is /var/run/xl2tpd/xl2tpd.pid.
+.TP
+.B connect-lac
+Establish new connection to LAC.
+Username and secret for tunnel can be passed as a command options.
 
-.TP 
-.B -C <control_file>
-Set an alternate control file.
+.TP
+.B disconnect-lac
+Disconnects tunnel.
 
+.TP
+.B remove-lac
+Removes existing LAC configuration.
+xl2tpd disconnects the tunnel before removing.
 
-.SH FILES
-.IP /etc/xl2tpd/xl2tpd.conf
-Configuration file of xl2tpd, used by default.
+.TP
+.B add-lns
+Adds new or modify existing LNS (L2TP Network Server) configuration.
 
-.IP /etc/xl2tpd/l2tp-secrets
-Secrets file, used by default.
+.TP
+.B remove-lns
+Removes existing LNS configuration.
 
-.IP /var/run/xl2tpd/l2tp\-control
-Control file, used by default.
+.TP
+.B status-lns
+Check the status of LNS.
+
+.TP
+.B available
+Check availability.
 
 .SH BUGS
 Please use the github project page
@@ -68,7 +76,7 @@ to send bugreports, issues and any other feedback.
 
 .SH SEE ALSO
 xl2tpd.conf(5),
-xl2tpd-control(8),
+xl2tpd(8),
 pppd(8)
 
 .SH COPYLEFT
@@ -87,12 +95,10 @@ along with this program (see the file LICENSE); if not, see
 https://www.gnu.org/licenses/, or contact Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 .SH CONTRIBUTORS
 Alexander Dorokhov <alex.dorokhov@gmail.com>
 .br
 Alexander Naumov <alexander_naumov@opensuse.org>
-
 
 .SH AUTHORS
 Forked from l2tpd by Xelerance: https://github.com/xelerance/xl2tpd
@@ -102,7 +108,6 @@ Michael Richardson <mcr@xelerance.com>
 Paul Wouters <paul@xelerance.com>
 .br
 Samir Hussain <shussain@xelerance.com>
-
 
 Previous development was hosted at sourceforge
 (http://www.sourceforge.net/projects/l2tpd) by:
@@ -115,6 +120,7 @@ Jeff McAdams <jeffm@iglou.com>
 
 Based off of l2tpd version 0.61.
 Many thanks to Jacco de Leeuw <jacco2@dds.nl> for maintaining l2tpd.
+
 .br
 Copyright (C)1998 Adtran, Inc.
 .br
